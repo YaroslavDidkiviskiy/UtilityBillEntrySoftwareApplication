@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfUser xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <User>
+    <FullName>Адміністратор</FullName>
+    <Address>-</Address>
+    <Login>admin</Login>
+    <Password>admin</Password>
+    <Balance>0</Balance>
+    <IsAdmin>true</IsAdmin>
+  </User>
+  <User>
+    <FullName>Кучинський Лев Азейбарджанец</FullName>
+    <Address>Дорошок 10</Address>
+    <Login>testLogin</Login>
+    <Password>test</Password>
+    <Balance>2898.56</Balance>
+    <IsAdmin>false</IsAdmin>
+  </User>
+</ArrayOfUser>

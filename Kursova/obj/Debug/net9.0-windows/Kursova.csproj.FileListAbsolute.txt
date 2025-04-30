@@ -1,0 +1,14 @@
+C:\Users\arosl\RiderProjects\Kursova\Kursova\obj\Debug\net9.0-windows\Kursova.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\arosl\RiderProjects\Kursova\Kursova\obj\Debug\net9.0-windows\Kursova.AssemblyInfoInputs.cache
+C:\Users\arosl\RiderProjects\Kursova\Kursova\obj\Debug\net9.0-windows\Kursova.AssemblyInfo.cs
+C:\Users\arosl\RiderProjects\Kursova\Kursova\obj\Debug\net9.0-windows\Kursova.csproj.CoreCompileInputs.cache
+C:\Users\arosl\RiderProjects\Kursova\Kursova\bin\Debug\net9.0-windows\Kursova.exe
+C:\Users\arosl\RiderProjects\Kursova\Kursova\bin\Debug\net9.0-windows\Kursova.deps.json
+C:\Users\arosl\RiderProjects\Kursova\Kursova\bin\Debug\net9.0-windows\Kursova.runtimeconfig.json
+C:\Users\arosl\RiderProjects\Kursova\Kursova\bin\Debug\net9.0-windows\Kursova.dll
+C:\Users\arosl\RiderProjects\Kursova\Kursova\bin\Debug\net9.0-windows\Kursova.pdb
+C:\Users\arosl\RiderProjects\Kursova\Kursova\obj\Debug\net9.0-windows\Kursova.dll
+C:\Users\arosl\RiderProjects\Kursova\Kursova\obj\Debug\net9.0-windows\refint\Kursova.dll
+C:\Users\arosl\RiderProjects\Kursova\Kursova\obj\Debug\net9.0-windows\Kursova.pdb
+C:\Users\arosl\RiderProjects\Kursova\Kursova\obj\Debug\net9.0-windows\Kursova.genruntimeconfig.cache
+C:\Users\arosl\RiderProjects\Kursova\Kursova\obj\Debug\net9.0-windows\ref\Kursova.dll
