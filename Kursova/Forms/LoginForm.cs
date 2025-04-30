@@ -12,7 +12,7 @@ namespace Kursova.Forms
             InitializeComponent();
         }
 
-        // Обробник входу
+        // Кнопка для логіну з if-виразом для визначення чи у юзера isAdmin=True
         private void BtnLogin_Click(object sender, EventArgs e)
         {
             var users = DatabaseService.LoadUsers();
@@ -36,7 +36,7 @@ namespace Kursova.Forms
             }
         }
 
-        // Обробник реєстрації (відкриття нової форми)
+        //  відкриття форми RegistrationForm для реєстрації
         private void BtnRegister_Click(object sender, EventArgs e)
         {
             RegistrationForm registrationForm = new RegistrationForm();

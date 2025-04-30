@@ -9,11 +9,11 @@
     <IsAdmin>true</IsAdmin>
   </User>
   <User>
-    <FullName>Кучинський Лев Азейбарджанец</FullName>
-    <Address>Дорошок 10</Address>
-    <Login>testLogin</Login>
-    <Password>test</Password>
-    <Balance>2898.56</Balance>
+    <FullName>Іван Іванов Іванович</FullName>
+    <Address>Хрещатик 21</Address>
+    <Login>test</Login>
+    <Password>1</Password>
+    <Balance>0</Balance>
     <IsAdmin>false</IsAdmin>
   </User>
 </ArrayOfUser>

@@ -12,3 +12,4 @@ C:\Users\arosl\RiderProjects\Kursova\Kursova\obj\Debug\net9.0-windows\refint\Kur
 C:\Users\arosl\RiderProjects\Kursova\Kursova\obj\Debug\net9.0-windows\Kursova.pdb
 C:\Users\arosl\RiderProjects\Kursova\Kursova\obj\Debug\net9.0-windows\Kursova.genruntimeconfig.cache
 C:\Users\arosl\RiderProjects\Kursova\Kursova\obj\Debug\net9.0-windows\ref\Kursova.dll
+C:\Users\arosl\RiderProjects\Kursova\Kursova\obj\Debug\net9.0-windows\Kursova.sourcelink.json

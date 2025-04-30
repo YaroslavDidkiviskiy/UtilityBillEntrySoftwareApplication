@@ -1,5 +1,6 @@
 ﻿using System.Windows.Forms;
 using Kursova.Services;
+using System.Drawing;
 
 namespace Kursova.Forms
 {
@@ -14,17 +15,33 @@ namespace Kursova.Forms
         private void LoadUsers()
         {
             dgvUsers.DataSource = DatabaseService.LoadUsers();
+            dgvUsers.ClearSelection();
         }
-
+        
         private void BtnDelete_Click(object sender, EventArgs e)
         {
-            if (dgvUsers.SelectedRows.Count > 0)
+            if (dgvUsers.SelectedRows.Count > 0 && 
+                MessageBox.Show("Ви впевнені, що хочете видалити користувача?", 
+                    "Підтвердження", 
+                    MessageBoxButtons.YesNo, 
+                    MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 var users = DatabaseService.LoadUsers();
                 users.RemoveAt(dgvUsers.SelectedRows[0].Index);
                 DatabaseService.SaveUsers(users);
-                LoadUsers(); // Оновлення таблиці
+                LoadUsers();
             }
+        }
+
+        private void BtnExit_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void BtnBack_Click(object sender, EventArgs e)
+        {
+            new LoginForm().Show();
+            this.Close();
         }
     }
 }

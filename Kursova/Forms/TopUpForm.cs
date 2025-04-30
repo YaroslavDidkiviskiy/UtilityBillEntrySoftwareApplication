@@ -1,47 +1,25 @@
 ﻿using System.Windows.Forms;
 using Kursova.Models;
+using System.Drawing;
 
 namespace Kursova.Forms
 {
     public partial class TopUpForm : Form
     {
         public User UpdatedUser { get; }
-        private TextBox txtAmount;
-        private Button btnConfirm;
 
         public TopUpForm(User user)
         {
             UpdatedUser = user;
             InitializeComponent();
-            SetupUI();
+            ApplyCustomStyles();
         }
 
-        private void SetupUI()
+        private void ApplyCustomStyles()
         {
-            this.ClientSize = new System.Drawing.Size(300, 200);
-            this.Text = "Поповнення балансу";
-            this.BackColor = System.Drawing.Color.FromArgb(245, 245, 245);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-
-            txtAmount = new TextBox
-            {
-                Location = new System.Drawing.Point(50, 50),
-                Size = new System.Drawing.Size(200, 30),
-                PlaceholderText = "Сума поповнення"
-            };
-            this.Controls.Add(txtAmount);
-
-            btnConfirm = new Button
-            {
-                Text = "Поповнити",
-                Location = new System.Drawing.Point(50, 100),
-                Size = new System.Drawing.Size(200, 40),
-                BackColor = System.Drawing.Color.FromArgb(0, 123, 255),
-                ForeColor = System.Drawing.Color.White,
-                FlatStyle = FlatStyle.Flat
-            };
-            btnConfirm.Click += BtnConfirm_Click;
-            this.Controls.Add(btnConfirm);
+            // Додаткові стилізації
+            txtAmount.Font = new Font("Segoe UI", 11F);
+            btnConfirm.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
         }
 
         private void BtnConfirm_Click(object sender, System.EventArgs e)
@@ -54,7 +32,9 @@ namespace Kursova.Forms
             }
             else
             {
-                MessageBox.Show("Введіть коректну суму!", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Введіть коректну суму більше нуля!", "Помилка вводу", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtAmount.Focus();
             }
         }
     }

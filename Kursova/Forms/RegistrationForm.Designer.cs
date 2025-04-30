@@ -33,7 +33,7 @@
 
             // Заголовок
             this.lblTitle = new Label();
-            this.lblTitle.Text = "Програмний застосунок введення розрахунків за комунальні платежі";
+            this.lblTitle.Text = "Реєстрація";
             this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
             this.lblTitle.ForeColor = System.Drawing.Color.White;
             this.lblTitle.Size = new System.Drawing.Size(400, 50);
