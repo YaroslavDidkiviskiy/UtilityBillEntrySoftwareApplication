@@ -1,8 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Collections.Generic;
-using System.Linq;
+using System.IO;
+using System.Xml.Serialization;
 using Kursova.Models;
 using Kursova.Services;
 
@@ -10,54 +11,69 @@ namespace Kursova
 {
     public partial class MainForm : Form
     {
-        private User _currentUser;
-        private readonly Color _darkBackColor = Color.FromArgb(30, 30, 30);
-        private readonly Color _darkForeColor = Color.WhiteSmoke;
+        private List<Payment> payments = new List<Payment>();
+        private ComboBox cmbServiceType;
+        private DataGridView dataGridView;
+        private TextBox txtPrevious, txtCurrent;
 
-        public MainForm(User user)
+        public MainForm(bool isAdmin = false)
         {
-            InitializeComponent();
-            _currentUser = user;
-            ApplyDarkTheme();
-            InitializeDataGridView();
-            LoadPayments();
-            dtpPaymentDate.Value = DateTime.Now;
+            InitializeComponent(isAdmin);
         }
 
-        private void ApplyDarkTheme()
+        private void InitializeComponent(bool isAdmin)
         {
-            this.BackColor = _darkBackColor;
-            this.ForeColor = _darkForeColor;
+            // Налаштування форми
+            this.ClientSize = new Size(800, 600);
+            this.Text = "Комунальні платежі";
+            this.BackColor = Color.White;
 
-            foreach (Control control in this.Controls)
+            // ComboBox для вибору типу послуги
+            cmbServiceType = new ComboBox();
+            cmbServiceType.Items.AddRange(new[] { "Електроенергія", "Газ", "Вода" });
+            cmbServiceType.Location = new Point(20, 20);
+            cmbServiceType.Size = new Size(200, 30);
+            this.Controls.Add(cmbServiceType);
+
+            // Поля вводу
+            txtPrevious = new TextBox 
+            { 
+                Location = new Point(20, 60), 
+                Size = new Size(200, 30), 
+                PlaceholderText = "Попередні показники" 
+            };
+            txtCurrent = new TextBox 
+            { 
+                Location = new Point(20, 100), 
+                Size = new Size(200, 30), 
+                PlaceholderText = "Поточні показники" 
+            };
+            this.Controls.Add(txtPrevious);
+            this.Controls.Add(txtCurrent);
+
+            // Кнопка розрахунку
+            var btnCalculate = new Button
             {
-                control.BackColor = _darkBackColor;
-                control.ForeColor = _darkForeColor;
+                Text = "Розрахувати",
+                Location = new Point(20, 140),
+                Size = new Size(200, 40),
+                BackColor = Color.SteelBlue,
+                ForeColor = Color.White
+            };
+            btnCalculate.Click += BtnCalculate_Click;
+            this.Controls.Add(btnCalculate);
 
-                if (control is Button btn)
-                {
-                    btn.BackColor = Color.FromArgb(70, 70, 70);
-                    btn.FlatStyle = FlatStyle.Flat;
-                    btn.FlatAppearance.BorderColor = Color.Gray;
-                }
-                else if (control is DataGridView dgv)
-                {
-                    dgv.BackgroundColor = _darkBackColor;
-                    dgv.DefaultCellStyle.BackColor = _darkBackColor;
-                    dgv.DefaultCellStyle.ForeColor = _darkForeColor;
-                    dgv.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(50, 50, 50);
-                    dgv.EnableHeadersVisualStyles = false;
-                }
-            }
-        }
+            // Таблиця результатів
+            dataGridView = new DataGridView
+            {
+                Location = new Point(250, 20),
+                Size = new Size(520, 500),
+                AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+            };
+            this.Controls.Add(dataGridView);
 
-        private void InitializeDataGridView()
-        {
-            dgvPayments.Columns.Clear();
-            dgvPayments.Columns.Add("Date", "Дата");
-            dgvPayments.Columns.Add("ServiceType", "Послуга");
-            dgvPayments.Columns.Add("Amount", "Сума");
-            dgvPayments.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            // Завантаження даних
+            LoadData();
         }
 
         private void BtnCalculate_Click(object sender, EventArgs e)
@@ -65,82 +81,84 @@ namespace Kursova
             try
             {
                 if (cmbServiceType.SelectedItem == null)
-                    throw new Exception("Оберіть тип послуги!");
+                {
+                    MessageBox.Show("Виберіть тип послуги!", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
 
-                if (!decimal.TryParse(txtPrevious.Text, out decimal prev) ||
-                    !decimal.TryParse(txtCurrent.Text, out decimal curr))
-                    throw new Exception("Невірний формат даних!");
+                if (!decimal.TryParse(txtPrevious.Text, out decimal previous) || 
+                    !decimal.TryParse(txtCurrent.Text, out decimal current))
+                {
+                    MessageBox.Show("Невірний формат показників!", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
 
-                if (curr <= prev)
-                    throw new Exception("Поточні показники мають бути більшими!");
-
-                string serviceType = cmbServiceType.SelectedItem.ToString();
-                decimal amount = Calculator.CalculatePayment(serviceType, curr, prev);
-                decimal tariff = Calculator.GetTariff(serviceType);
+                if (current <= previous)
+                {
+                    MessageBox.Show("Поточні показники мають бути більшими за попередні!", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
 
                 var payment = new Payment
                 {
-                    Date = dtpPaymentDate.Value,
-                    ServiceType = serviceType,
-                    PreviousReading = prev,
-                    CurrentReading = curr,
-                    Tariff = tariff,
-                    Amount = amount
+                    Date = DateTime.Now,
+                    ServiceType = cmbServiceType.SelectedItem.ToString(),
+                    PreviousReading = previous,
+                    CurrentReading = current,
+                    Tariff = Calculator.GetTariff(cmbServiceType.SelectedItem.ToString())
                 };
 
-                _currentUser.Payments.Add(payment);
-                DatabaseService.UpdateUser(_currentUser);
-                LoadPayments();
-                
+                payments.Add(payment);
+                dataGridView.DataSource = null;
+                dataGridView.DataSource = new List<Payment>(payments); // Оновлення DataGridView
+                SaveData();
+
+                // Очищення полів
+                txtPrevious.Clear();
                 txtCurrent.Clear();
                 cmbServiceType.SelectedIndex = -1;
-                
-                MessageBox.Show($"Платіж успішно додано!\nСума: {amount} грн",
-                                "Успіх", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                MessageBox.Show("Розрахунок успішно збережено!", "Інформація", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Помилка: {ex.Message}", "Критична помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        private void LoadPayments()
+        private void SaveData()
         {
-            dgvPayments.Rows.Clear();
-            foreach (var payment in _currentUser.Payments.OrderByDescending(p => p.Date))
+            try
             {
-                dgvPayments.Rows.Add(
-                    payment.Date.ToString("dd.MM.yyyy"),
-                    payment.ServiceType,
-                    $"{payment.Amount:N2} грн"
-                );
+                using (var writer = new StreamWriter("payments.xml"))
+                {
+                    new XmlSerializer(typeof(List<Payment>)).Serialize(writer, payments);
+                }
             }
-        }
-
-        private void BtnFilter_Click(object sender, EventArgs e)
-        {
-            var filtered = _currentUser.Payments
-                .Where(p => p.Date >= dtpStartDate.Value.Date && 
-                            p.Date <= dtpEndDate.Value.Date)
-                .OrderByDescending(p => p.Date)
-                .ToList();
-
-            dgvPayments.Rows.Clear();
-            foreach (var payment in filtered)
+            catch (Exception ex)
             {
-                dgvPayments.Rows.Add(
-                    payment.Date.ToString("dd.MM.yyyy"),
-                    payment.ServiceType,
-                    $"{payment.Amount:N2} грн"
-                );
+                MessageBox.Show($"Помилка збереження: {ex.Message}", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        private void BtnResetFilter_Click(object sender, EventArgs e)
+        private void LoadData()
         {
-            dtpStartDate.Value = DateTime.Now.AddMonths(-1);
-            dtpEndDate.Value = DateTime.Now;
-            LoadPayments();
+            try
+            {
+                if (File.Exists("payments.xml"))
+                {
+                    using (var reader = new StreamReader("payments.xml"))
+                    {
+                        var serializer = new XmlSerializer(typeof(List<Payment>));
+                        payments = (List<Payment>)serializer.Deserialize(reader);
+                        dataGridView.DataSource = payments;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Помилка завантаження: {ex.Message}", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }
