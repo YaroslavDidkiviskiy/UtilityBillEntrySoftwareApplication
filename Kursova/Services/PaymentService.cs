@@ -1,5 +1,5 @@
-﻿using Kursova.Models;
-using Kursova.Services;
+﻿using System.Linq;
+using Kursova.Models;
 
 namespace Kursova.Services
 {
@@ -8,12 +8,19 @@ namespace Kursova.Services
         public static void ProcessPayment(User user, Payment payment)
         {
             if (user.Balance < payment.Amount)
-                throw new System.Exception("Недостатньо коштів на рахунку!");
-
+                throw new System.Exception("Недостатньо коштів!");
+            
             user.Balance -= payment.Amount;
-            var payments = DatabaseService.LoadPayments();
-            payments.Add(payment);
-            DatabaseService.SavePayments(payments); // Використовуємо SavePayments
+            user.Payments.Add(payment);
+            DatabaseService.UpdateUser(user);
+        }
+
+        public static Payment GetLastPayment(User user, string serviceType)
+        {
+            return user.Payments
+                .Where(p => p.ServiceType == serviceType)
+                .OrderByDescending(p => p.Date)
+                .FirstOrDefault();
         }
     }
 }

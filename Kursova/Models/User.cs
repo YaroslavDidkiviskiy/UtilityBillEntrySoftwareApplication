@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Collections.Generic;
 
 namespace Kursova.Models
 {
@@ -11,6 +11,6 @@ namespace Kursova.Models
         public string Password { get; set; }
         public decimal Balance { get; set; }
         public bool IsAdmin { get; set; }
-        
+        public List<Payment> Payments { get; set; } = new List<Payment>();
     }
 }

@@ -7,13 +7,32 @@
     <Password>admin</Password>
     <Balance>0</Balance>
     <IsAdmin>true</IsAdmin>
+    <Payments />
   </User>
   <User>
     <FullName>Іван Іванов Іванович</FullName>
     <Address>Хрещатик 21</Address>
     <Login>test</Login>
     <Password>1</Password>
-    <Balance>0</Balance>
+    <Balance>40963.24</Balance>
     <IsAdmin>false</IsAdmin>
+    <Payments>
+      <Payment>
+        <ServiceType>Електроенергія</ServiceType>
+        <PreviousReading>421</PreviousReading>
+        <CurrentReading>555</CurrentReading>
+        <Date>2025-05-01T22:59:59.8630975+03:00</Date>
+        <Amount>578.88</Amount>
+        <Tariff>4.32</Tariff>
+      </Payment>
+      <Payment>
+        <ServiceType>Електроенергія</ServiceType>
+        <PreviousReading>421</PreviousReading>
+        <CurrentReading>555</CurrentReading>
+        <Date>2025-05-01T23:00:00.9663463+03:00</Date>
+        <Amount>578.88</Amount>
+        <Tariff>4.32</Tariff>
+      </Payment>
+    </Payments>
   </User>
 </ArrayOfUser>

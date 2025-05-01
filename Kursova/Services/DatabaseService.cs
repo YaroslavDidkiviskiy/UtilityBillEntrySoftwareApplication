@@ -8,21 +8,18 @@ namespace Kursova.Services
     public static class DatabaseService
     {
         private static readonly string UsersPath = "users.xml";
-        private static readonly string PaymentsPath = "payments.xml";
 
-        // Завантажити користувачів
+        // Завантажити всіх користувачів
         public static List<User> LoadUsers()
         {
-            if (File.Exists(UsersPath))
-            {
-                var serializer = new XmlSerializer(typeof(List<User>));
-                using var reader = new StreamReader(UsersPath);
-                return (List<User>)serializer.Deserialize(reader);
-            }
-            return new List<User>();
+            if (!File.Exists(UsersPath)) return new List<User>();
+            
+            var serializer = new XmlSerializer(typeof(List<User>));
+            using var reader = new StreamReader(UsersPath);
+            return (List<User>)serializer.Deserialize(reader);
         }
 
-        // Зберегти користувачів
+        // Зберегти всіх користувачів
         public static void SaveUsers(List<User> users)
         {
             var serializer = new XmlSerializer(typeof(List<User>));
@@ -30,32 +27,13 @@ namespace Kursova.Services
             serializer.Serialize(writer, users);
         }
 
-        // Завантажити платежі
-        public static List<Payment> LoadPayments()
+        // Оновити конкретного користувача
+        public static void UpdateUser(User user)
         {
-            if (File.Exists(PaymentsPath))
-            {
-                var serializer = new XmlSerializer(typeof(List<Payment>));
-                using var reader = new StreamReader(PaymentsPath);
-                return (List<Payment>)serializer.Deserialize(reader);
-            }
-            return new List<Payment>();
-        }
-
-        // Зберегти один платіж
-        public static void SavePayment(Payment payment)
-        {
-            var payments = LoadPayments();
-            payments.Add(payment);
-            SavePayments(payments); // Викликаємо метод для збереження всього списку
-        }
-
-        // Зберегти список платежів
-        public static void SavePayments(List<Payment> payments)
-        {
-            var serializer = new XmlSerializer(typeof(List<Payment>));
-            using var writer = new StreamWriter(PaymentsPath);
-            serializer.Serialize(writer, payments);
+            var users = LoadUsers();
+            var index = users.FindIndex(u => u.Login == user.Login);
+            if (index != -1) users[index] = user;
+            SaveUsers(users);
         }
     }
 }

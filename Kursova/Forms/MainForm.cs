@@ -1,9 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using System.IO;
-using System.Xml.Serialization;
+using System.Collections.Generic;
+using System.Linq;
 using Kursova.Models;
 using Kursova.Services;
 
@@ -11,69 +10,54 @@ namespace Kursova
 {
     public partial class MainForm : Form
     {
-        private List<Payment> payments = new List<Payment>();
-        private ComboBox cmbServiceType;
-        private DataGridView dataGridView;
-        private TextBox txtPrevious, txtCurrent;
+        private User _currentUser;
+        private readonly Color _darkBackColor = Color.FromArgb(30, 30, 30);
+        private readonly Color _darkForeColor = Color.WhiteSmoke;
 
-        public MainForm(bool isAdmin = false)
+        public MainForm(User user)
         {
-            InitializeComponent(isAdmin);
+            InitializeComponent();
+            _currentUser = user;
+            ApplyDarkTheme();
+            InitializeDataGridView();
+            LoadPayments();
+            dtpPaymentDate.Value = DateTime.Now;
         }
 
-        private void InitializeComponent(bool isAdmin)
+        private void ApplyDarkTheme()
         {
-            // Налаштування форми
-            this.ClientSize = new Size(800, 600);
-            this.Text = "Комунальні платежі";
-            this.BackColor = Color.White;
+            this.BackColor = _darkBackColor;
+            this.ForeColor = _darkForeColor;
 
-            // ComboBox для вибору типу послуги
-            cmbServiceType = new ComboBox();
-            cmbServiceType.Items.AddRange(new[] { "Електроенергія", "Газ", "Вода" });
-            cmbServiceType.Location = new Point(20, 20);
-            cmbServiceType.Size = new Size(200, 30);
-            this.Controls.Add(cmbServiceType);
-
-            // Поля вводу
-            txtPrevious = new TextBox 
-            { 
-                Location = new Point(20, 60), 
-                Size = new Size(200, 30), 
-                PlaceholderText = "Попередні показники" 
-            };
-            txtCurrent = new TextBox 
-            { 
-                Location = new Point(20, 100), 
-                Size = new Size(200, 30), 
-                PlaceholderText = "Поточні показники" 
-            };
-            this.Controls.Add(txtPrevious);
-            this.Controls.Add(txtCurrent);
-
-            // Кнопка розрахунку
-            var btnCalculate = new Button
+            foreach (Control control in this.Controls)
             {
-                Text = "Розрахувати",
-                Location = new Point(20, 140),
-                Size = new Size(200, 40),
-                BackColor = Color.SteelBlue,
-                ForeColor = Color.White
-            };
-            btnCalculate.Click += BtnCalculate_Click;
-            this.Controls.Add(btnCalculate);
+                control.BackColor = _darkBackColor;
+                control.ForeColor = _darkForeColor;
 
-            // Таблиця результатів
-            dataGridView = new DataGridView
-            {
-                Location = new Point(250, 20),
-                Size = new Size(520, 500),
-                AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
-            };
-            this.Controls.Add(dataGridView);
+                if (control is Button btn)
+                {
+                    btn.BackColor = Color.FromArgb(70, 70, 70);
+                    btn.FlatStyle = FlatStyle.Flat;
+                    btn.FlatAppearance.BorderColor = Color.Gray;
+                }
+                else if (control is DataGridView dgv)
+                {
+                    dgv.BackgroundColor = _darkBackColor;
+                    dgv.DefaultCellStyle.BackColor = _darkBackColor;
+                    dgv.DefaultCellStyle.ForeColor = _darkForeColor;
+                    dgv.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(50, 50, 50);
+                    dgv.EnableHeadersVisualStyles = false;
+                }
+            }
+        }
 
-            // Завантаження даних
-            LoadData();
+        private void InitializeDataGridView()
+        {
+            dgvPayments.Columns.Clear();
+            dgvPayments.Columns.Add("Date", "Дата");
+            dgvPayments.Columns.Add("ServiceType", "Послуга");
+            dgvPayments.Columns.Add("Amount", "Сума");
+            dgvPayments.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
         }
 
         private void BtnCalculate_Click(object sender, EventArgs e)
@@ -81,84 +65,82 @@ namespace Kursova
             try
             {
                 if (cmbServiceType.SelectedItem == null)
-                {
-                    MessageBox.Show("Виберіть тип послуги!", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
+                    throw new Exception("Оберіть тип послуги!");
 
-                if (!decimal.TryParse(txtPrevious.Text, out decimal previous) || 
-                    !decimal.TryParse(txtCurrent.Text, out decimal current))
-                {
-                    MessageBox.Show("Невірний формат показників!", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
+                if (!decimal.TryParse(txtPrevious.Text, out decimal prev) ||
+                    !decimal.TryParse(txtCurrent.Text, out decimal curr))
+                    throw new Exception("Невірний формат даних!");
 
-                if (current <= previous)
-                {
-                    MessageBox.Show("Поточні показники мають бути більшими за попередні!", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
+                if (curr <= prev)
+                    throw new Exception("Поточні показники мають бути більшими!");
+
+                string serviceType = cmbServiceType.SelectedItem.ToString();
+                decimal amount = Calculator.CalculatePayment(serviceType, curr, prev);
+                decimal tariff = Calculator.GetTariff(serviceType);
 
                 var payment = new Payment
                 {
-                    Date = DateTime.Now,
-                    ServiceType = cmbServiceType.SelectedItem.ToString(),
-                    PreviousReading = previous,
-                    CurrentReading = current,
-                    Tariff = Calculator.GetTariff(cmbServiceType.SelectedItem.ToString())
+                    Date = dtpPaymentDate.Value,
+                    ServiceType = serviceType,
+                    PreviousReading = prev,
+                    CurrentReading = curr,
+                    Tariff = tariff,
+                    Amount = amount
                 };
 
-                payments.Add(payment);
-                dataGridView.DataSource = null;
-                dataGridView.DataSource = new List<Payment>(payments); // Оновлення DataGridView
-                SaveData();
-
-                // Очищення полів
-                txtPrevious.Clear();
+                _currentUser.Payments.Add(payment);
+                DatabaseService.UpdateUser(_currentUser);
+                LoadPayments();
+                
                 txtCurrent.Clear();
                 cmbServiceType.SelectedIndex = -1;
-
-                MessageBox.Show("Розрахунок успішно збережено!", "Інформація", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                
+                MessageBox.Show($"Платіж успішно додано!\nСума: {amount} грн",
+                                "Успіх", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Помилка: {ex.Message}", "Критична помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        private void SaveData()
+        private void LoadPayments()
         {
-            try
+            dgvPayments.Rows.Clear();
+            foreach (var payment in _currentUser.Payments.OrderByDescending(p => p.Date))
             {
-                using (var writer = new StreamWriter("payments.xml"))
-                {
-                    new XmlSerializer(typeof(List<Payment>)).Serialize(writer, payments);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Помилка збереження: {ex.Message}", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                dgvPayments.Rows.Add(
+                    payment.Date.ToString("dd.MM.yyyy"),
+                    payment.ServiceType,
+                    $"{payment.Amount:N2} грн"
+                );
             }
         }
 
-        private void LoadData()
+        private void BtnFilter_Click(object sender, EventArgs e)
         {
-            try
+            var filtered = _currentUser.Payments
+                .Where(p => p.Date >= dtpStartDate.Value.Date && 
+                            p.Date <= dtpEndDate.Value.Date)
+                .OrderByDescending(p => p.Date)
+                .ToList();
+
+            dgvPayments.Rows.Clear();
+            foreach (var payment in filtered)
             {
-                if (File.Exists("payments.xml"))
-                {
-                    using (var reader = new StreamReader("payments.xml"))
-                    {
-                        var serializer = new XmlSerializer(typeof(List<Payment>));
-                        payments = (List<Payment>)serializer.Deserialize(reader);
-                        dataGridView.DataSource = payments;
-                    }
-                }
+                dgvPayments.Rows.Add(
+                    payment.Date.ToString("dd.MM.yyyy"),
+                    payment.ServiceType,
+                    $"{payment.Amount:N2} грн"
+                );
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Помилка завантаження: {ex.Message}", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+        }
+
+        private void BtnResetFilter_Click(object sender, EventArgs e)
+        {
+            dtpStartDate.Value = DateTime.Now.AddMonths(-1);
+            dtpEndDate.Value = DateTime.Now;
+            LoadPayments();
         }
     }
 }
