@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Kursova.Models
+﻿namespace Kursova.Models
 {
     [Serializable]
     public class Payment

@@ -1,6 +1,5 @@
-﻿using System.Windows.Forms;
-using Kursova.Services;
-using System.Drawing;
+﻿using Kursova.Services;
+
 
 namespace Kursova.Forms
 {

@@ -17,7 +17,7 @@
         // Метод для розрахунку платежу
         public static decimal CalculatePayment(string serviceType, decimal current, decimal previous)
         {
-            decimal tariff = GetTariff(serviceType); // Використовуємо GetTariff
+            decimal tariff = GetTariff(serviceType); // Використовуємо GetTariff 
 
             if (current < previous)
                 throw new System.ArgumentException("Поточні показники не можуть бути меншими за попередні!");

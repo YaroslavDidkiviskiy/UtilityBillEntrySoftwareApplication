@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Kursova.Models
+﻿namespace Kursova.Models
 {
     [Serializable]
     public class User

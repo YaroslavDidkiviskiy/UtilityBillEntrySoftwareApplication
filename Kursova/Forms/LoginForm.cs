@@ -1,7 +1,4 @@
-﻿using System;
-using System.Windows.Forms;
-using Kursova.Models;
-using Kursova.Services;
+﻿using Kursova.Services;
 
 namespace Kursova.Forms
 {

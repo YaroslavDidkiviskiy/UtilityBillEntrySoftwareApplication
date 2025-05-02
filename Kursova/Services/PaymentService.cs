@@ -1,5 +1,5 @@
-﻿using System.Linq;
-using Kursova.Models;
+﻿using Kursova.Models;
+
 
 namespace Kursova.Services
 {
