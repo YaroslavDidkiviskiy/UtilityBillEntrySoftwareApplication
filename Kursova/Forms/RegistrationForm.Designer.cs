@@ -3,7 +3,7 @@
     partial class RegistrationForm
     {
         private System.ComponentModel.IContainer components = null;
-
+        private Panel panelMain;
         private Label lblTitle;
         private TextBox txtFullName;
         private TextBox txtAddress;
@@ -16,70 +16,85 @@
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
-            {
                 components.Dispose();
-            }
             base.Dispose(disposing);
         }
 
         private void InitializeComponent()
         {
-            // Налаштування форми
-            this.ClientSize = new System.Drawing.Size(450, 450);
-            this.BackColor = System.Drawing.Color.FromArgb(51, 51, 76);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.components = new System.ComponentModel.Container();
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(500, 550);
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.StartPosition = FormStartPosition.CenterScreen;
             this.Text = "Реєстрація";
+
+            // Основна панель
+            this.panelMain = new Panel();
+            this.panelMain.Size = new System.Drawing.Size(450, 450);
+            this.panelMain.Location = new System.Drawing.Point(25, 50);
+            this.panelMain.BackColor = Color.FromArgb(50, 50, 90);
+            this.panelMain.BorderStyle = BorderStyle.FixedSingle;
+            this.Controls.Add(panelMain);
 
             // Заголовок
             this.lblTitle = new Label();
             this.lblTitle.Text = "Реєстрація";
-            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            this.lblTitle.ForeColor = System.Drawing.Color.White;
-            this.lblTitle.Size = new System.Drawing.Size(400, 50);
-            this.lblTitle.Location = new System.Drawing.Point(25, 20);
-            this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.Controls.Add(this.lblTitle);
+            this.lblTitle.Font = new Font("Segoe UI", 14, FontStyle.Bold);
+            this.lblTitle.ForeColor = Color.White;
+            this.lblTitle.AutoSize = true;
+            this.lblTitle.Location = new Point(180, 20);
+            this.panelMain.Controls.Add(lblTitle);
 
-            // Поля для реєстрації
-            this.txtFullName = CreateTextBox(50, 80, "ПІБ");
-            this.txtAddress = CreateTextBox(50, 130, "Адреса");
-            this.txtNewLogin = CreateTextBox(50, 180, "Новий логін");
-            this.txtNewPassword = CreateTextBox(50, 230, "Новий пароль", true);
-            this.txtConfirmPassword = CreateTextBox(50, 280, "Підтвердити пароль", true);
+            // Текстові поля
+            int yPos = 70;
+            this.txtFullName = CreateField("ПІБ", ref yPos);
+            this.txtAddress = CreateField("Адреса", ref yPos);
+            this.txtNewLogin = CreateField("Логін", ref yPos);
+            this.txtNewPassword = CreateField("Пароль", ref yPos, true);
+            this.txtConfirmPassword = CreateField("Підтвердити пароль", ref yPos, true);
 
-            // Кнопка реєстрації
+            // Кнопки
             this.btnRegister = new Button();
             this.btnRegister.Text = "Зареєструватися";
-            this.btnRegister.Location = new System.Drawing.Point(50, 340);
-            this.btnRegister.Size = new System.Drawing.Size(350, 40);
-            this.btnRegister.BackColor = System.Drawing.Color.FromArgb(92, 184, 92);
-            this.btnRegister.ForeColor = System.Drawing.Color.White;
-            this.btnRegister.FlatStyle = FlatStyle.Flat;
-            this.btnRegister.Click += new System.EventHandler(this.BtnRegister_Click);
-            this.Controls.Add(this.btnRegister);
+            this.btnRegister.Location = new Point(50, 350);
+            this.btnRegister.Size = new Size(350, 40);
+            StyleButton(btnRegister, Color.FromArgb(0, 123, 255));
+            this.btnRegister.Click += BtnRegister_Click;
 
-            // Кнопка повернення
             this.btnBackToLogin = new Button();
-            this.btnBackToLogin.Text = "Повернутись до авторизації";
-            this.btnBackToLogin.Location = new System.Drawing.Point(50, 390);
-            this.btnBackToLogin.Size = new System.Drawing.Size(350, 40);
-            this.btnBackToLogin.BackColor = System.Drawing.Color.FromArgb(0, 123, 255);
-            this.btnBackToLogin.ForeColor = System.Drawing.Color.White;
-            this.btnBackToLogin.FlatStyle = FlatStyle.Flat;
-            this.btnBackToLogin.Click += (s, e) => this.Close();
-            this.Controls.Add(this.btnBackToLogin);
+            this.btnBackToLogin.Text = "Назад до входу";
+            this.btnBackToLogin.Location = new Point(50, 400);
+            this.btnBackToLogin.Size = new Size(350, 40);
+            StyleButton(btnBackToLogin, Color.FromArgb(70, 70, 120));
+            this.btnBackToLogin.Click += (s, e) => Close();
+
+            this.panelMain.Controls.AddRange(new[] { btnRegister, btnBackToLogin });
         }
 
-        private TextBox CreateTextBox(int x, int y, string placeholder, bool isPassword = false)
+        private TextBox CreateField(string placeholder, ref int y, bool isPassword = false)
         {
-            var textBox = new TextBox();
-            textBox.Location = new System.Drawing.Point(x, y);
-            textBox.Size = new System.Drawing.Size(350, 30);
-            textBox.PlaceholderText = placeholder;
-            textBox.PasswordChar = isPassword ? '•' : default;
-            this.Controls.Add(textBox);
-            return textBox;
+            var txt = new TextBox();
+            txt.Location = new Point(50, y);
+            txt.Size = new Size(350, 35);
+            txt.BackColor = Color.FromArgb(70, 70, 70);
+            txt.ForeColor = Color.White;
+            txt.BorderStyle = BorderStyle.FixedSingle;
+            txt.PlaceholderText = placeholder;
+            txt.PasswordChar = isPassword ? '•' : default;
+            y += 50;
+            panelMain.Controls.Add(txt);
+            return txt;
+        }
+
+        private void StyleButton(Button btn, Color backColor)
+        {
+            btn.BackColor = backColor;
+            btn.ForeColor = Color.White;
+            btn.FlatStyle = FlatStyle.Flat;
+            btn.FlatAppearance.BorderSize = 0;
+            btn.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+            btn.Cursor = Cursors.Hand;
         }
     }
 }

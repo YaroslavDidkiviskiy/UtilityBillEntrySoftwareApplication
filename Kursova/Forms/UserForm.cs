@@ -1,5 +1,7 @@
 ﻿using Kursova.Models;
 using Kursova.Services;
+using System.Data;
+using System.Linq;
 
 namespace Kursova.Forms
 {
@@ -12,11 +14,42 @@ namespace Kursova.Forms
             _currentUser = user;
             InitializeComponent();
             UpdateBalanceLabel();
+            LoadPayments();
         }
 
+        
+        // Кнопка для поповнення балансу
         private void UpdateBalanceLabel()
         {
             lblBalance.Text = $"Баланс: {_currentUser.Balance} грн";
+        }
+
+        private void LoadPayments()
+        {
+            dgvPayments.Columns.Clear();
+
+            var dateColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = "Date",
+                HeaderText = "Дата",
+                DefaultCellStyle = new DataGridViewCellStyle { Format = "g" }
+            };
+
+            var serviceColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = "ServiceType",
+                HeaderText = "Тип послуги"
+            };
+
+            var amountColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = "Amount",
+                HeaderText = "Сума",
+                DefaultCellStyle = new DataGridViewCellStyle { Format = "0.00 грн" }
+            };
+
+            dgvPayments.Columns.AddRange(dateColumn, serviceColumn, amountColumn);
+            dgvPayments.DataSource = _currentUser.Payments;
         }
 
         private void BtnCalculate_Click(object sender, EventArgs e)
@@ -48,6 +81,7 @@ namespace Kursova.Forms
 
                 PaymentService.ProcessPayment(_currentUser, payment);
                 UpdateBalanceLabel();
+                LoadPayments();
                 MessageBox.Show($"Оплачено: {amount} грн", "Успіх", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
@@ -70,7 +104,7 @@ namespace Kursova.Forms
 
         private void BtnBack_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
             new LoginForm().Show();
         }
     }

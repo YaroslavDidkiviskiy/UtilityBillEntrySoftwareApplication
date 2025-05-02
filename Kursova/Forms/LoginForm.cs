@@ -1,4 +1,5 @@
 ﻿using Kursova.Services;
+using System.Windows.Forms;
 
 namespace Kursova.Forms
 {
@@ -7,9 +8,18 @@ namespace Kursova.Forms
         public LoginForm()
         {
             InitializeComponent();
+            ApplyCustomStyles();
         }
 
-        // Кнопка для логіну з if-виразом для визначення чи у юзера isAdmin=True
+        private void ApplyCustomStyles()
+        {
+            // Стилізація відповідно до UserForm
+            txtLogin.BackColor = Color.FromArgb(70, 70, 70);
+            txtLogin.ForeColor = Color.White;
+            txtPassword.BackColor = Color.FromArgb(70, 70, 70);
+            txtPassword.ForeColor = Color.White;
+        }
+
         private void BtnLogin_Click(object sender, EventArgs e)
         {
             var users = DatabaseService.LoadUsers();
@@ -33,11 +43,10 @@ namespace Kursova.Forms
             }
         }
 
-        //  відкриття форми RegistrationForm для реєстрації
         private void BtnRegister_Click(object sender, EventArgs e)
         {
             RegistrationForm registrationForm = new RegistrationForm();
-            registrationForm.ShowDialog(); // Відкрити форму реєстрації
+            registrationForm.ShowDialog();
         }
     }
 }

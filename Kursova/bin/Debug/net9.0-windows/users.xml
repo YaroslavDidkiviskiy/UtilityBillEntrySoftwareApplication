@@ -14,7 +14,7 @@
     <Address>Хрещатик 21</Address>
     <Login>test</Login>
     <Password>1</Password>
-    <Balance>40963.24</Balance>
+    <Balance>29331.84</Balance>
     <IsAdmin>false</IsAdmin>
     <Payments>
       <Payment>
@@ -32,6 +32,54 @@
         <Date>2025-05-01T23:00:00.9663463+03:00</Date>
         <Amount>578.88</Amount>
         <Tariff>4.32</Tariff>
+      </Payment>
+      <Payment>
+        <ServiceType>Електроенергія</ServiceType>
+        <PreviousReading>222</PreviousReading>
+        <CurrentReading>444</CurrentReading>
+        <Date>2025-05-02T16:12:27.2879902+03:00</Date>
+        <Amount>959.04</Amount>
+        <Tariff>4.32</Tariff>
+      </Payment>
+      <Payment>
+        <ServiceType>Газ</ServiceType>
+        <PreviousReading>222</PreviousReading>
+        <CurrentReading>444</CurrentReading>
+        <Date>2025-05-02T16:12:41.7989261+03:00</Date>
+        <Amount>1767.12</Amount>
+        <Tariff>7.96</Tariff>
+      </Payment>
+      <Payment>
+        <ServiceType>Газ</ServiceType>
+        <PreviousReading>112</PreviousReading>
+        <CurrentReading>323</CurrentReading>
+        <Date>2025-05-02T16:18:58.636238+03:00</Date>
+        <Amount>1679.56</Amount>
+        <Tariff>7.96</Tariff>
+      </Payment>
+      <Payment>
+        <ServiceType>Електроенергія</ServiceType>
+        <PreviousReading>412</PreviousReading>
+        <CurrentReading>1244</CurrentReading>
+        <Date>2025-05-02T16:22:38.6173029+03:00</Date>
+        <Amount>3594.24</Amount>
+        <Tariff>4.32</Tariff>
+      </Payment>
+      <Payment>
+        <ServiceType>Електроенергія</ServiceType>
+        <PreviousReading>412</PreviousReading>
+        <CurrentReading>1244</CurrentReading>
+        <Date>2025-05-02T16:22:40.2747404+03:00</Date>
+        <Amount>3594.24</Amount>
+        <Tariff>4.32</Tariff>
+      </Payment>
+      <Payment>
+        <ServiceType>Газ</ServiceType>
+        <PreviousReading>555</PreviousReading>
+        <CurrentReading>600</CurrentReading>
+        <Date>2025-05-02T16:35:23.8152561+03:00</Date>
+        <Amount>358.20</Amount>
+        <Tariff>7.96</Tariff>
       </Payment>
     </Payments>
   </User>

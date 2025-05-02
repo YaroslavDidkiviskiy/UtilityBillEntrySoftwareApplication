@@ -1,5 +1,6 @@
 ﻿using Kursova.Models;
-
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace Kursova.Forms
 {
@@ -16,9 +17,10 @@ namespace Kursova.Forms
 
         private void ApplyCustomStyles()
         {
-            // Додаткові стилізації
-            txtAmount.Font = new Font("Segoe UI", 11F);
-            btnConfirm.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            this.BackColor = Color.FromArgb(30, 30, 70);
+            txtAmount.BackColor = Color.FromArgb(70, 70, 70);
+            txtAmount.ForeColor = Color.White;
+            lblInstruction.ForeColor = Color.White;
         }
 
         private void BtnConfirm_Click(object sender, System.EventArgs e)
@@ -26,12 +28,20 @@ namespace Kursova.Forms
             if (decimal.TryParse(txtAmount.Text, out decimal amount) && amount > 0)
             {
                 UpdatedUser.Balance += amount;
+                
+                // Повідомлення, коли рахунок поповнено успішно
+                MessageBox.Show($"Баланс успішно поповнено на {amount} грн!\nНовий баланс: {UpdatedUser.Balance} грн", 
+                    "Успішна операція", 
+                    MessageBoxButtons.OK, 
+                    MessageBoxIcon.Information);
+
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }
             else
             {
-                MessageBox.Show("Введіть коректну суму більше нуля!", "Помилка вводу", 
+                // Пропрацювання помилки, коли користувач вводить число менше 0
+                MessageBox.Show("Введіть коректну суму більше нуля!", "Помилка вводу",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtAmount.Focus();
             }
